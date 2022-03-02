@@ -1,12 +1,12 @@
 #include <vector>
 
-typedef struct EmailAlert 
+struct EmailAlert 
 {
     char emailSent;
     char emailNotSent;
 };
  
-typedef struct LEDAlert 
+struct LEDAlert 
 {
     char ledGlows;
     char ledOff;
