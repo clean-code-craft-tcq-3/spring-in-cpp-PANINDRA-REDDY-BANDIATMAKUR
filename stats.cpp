@@ -1,5 +1,5 @@
 #include "stats.h"
 
-Statistics::ComputeStatistics(const std::vector<___>& ) {
+auto Statistics::ComputeStatistics(const std::vector<IAlerter*>& alerters) {
     //Implement statistics here
 }
