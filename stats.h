@@ -12,5 +12,5 @@ struct LEDAlert
     char ledOff;
 };
 namespace Statistics {
-    float ComputeStatistics(const std::vector<int*>& alerters );
+    float ComputeStatistics(const std::vector<float *>& alerters );
 }
