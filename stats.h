@@ -1,5 +1,5 @@
 #include <vector>
 
 namespace Statistics {
-    Stats ComputeStatistics(const std::vector<___>& );
+    auto ComputeStatistics(const std::vector<IAlerter*>& alerters );
 }
