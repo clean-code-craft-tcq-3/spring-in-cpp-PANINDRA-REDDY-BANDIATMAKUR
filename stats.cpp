@@ -1,5 +1,6 @@
+#include "catch.hpp"
 #include "stats.h"
 
-Stats Statistics::ComputeStatistics(const std::vector<___>& ) {
+float Statistics::ComputeStatistics(const std::vector<float *>& alerters) {
     //Implement statistics here
 }
