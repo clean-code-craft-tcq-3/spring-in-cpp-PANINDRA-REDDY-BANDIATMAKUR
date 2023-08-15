@@ -53,7 +53,7 @@ class Box {
   static std::unique_ptr<Box> makeGreenBox(double initial_weight);
   static std::unique_ptr<Box> makeBlueBox(double initial_weight);
   bool operator<(const Box& rhs) const { return weight_ < rhs.weight_; }
-
+  
   // TODO
 
  protected:

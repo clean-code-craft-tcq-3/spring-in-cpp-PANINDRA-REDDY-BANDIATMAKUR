@@ -274,7 +274,7 @@ namespace Catch {
 #  if !defined(__clang__) // Handle Clang masquerading for msvc
 
 // MSVC traditional preprocessor needs some workaround for __VA_ARGS__
-// _MSVC_TRADITIONAL == 0 means new conformant preprocessor
+// _MSVC_TRADITIONAL == 0 means new conformant preprocessor 
 // _MSVC_TRADITIONAL == 1 means old traditional non-conformant preprocessor
 #    if !defined(_MSVC_TRADITIONAL) || (defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL)
 #      define CATCH_INTERNAL_CONFIG_TRADITIONAL_MSVC_PREPROCESSOR
