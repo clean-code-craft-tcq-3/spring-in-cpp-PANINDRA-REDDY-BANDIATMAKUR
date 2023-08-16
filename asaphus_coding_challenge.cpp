@@ -54,22 +54,15 @@ class Box {
   static std::unique_ptr<Box> makeBlueBox(double initial_weight);
   bool operator<(const Box& rhs) const { return weight_ < rhs.weight_; }
   
-  // TODO
-  void boxAbsorb(double weight);
-  double getWeight() const { return weight_; }
+  //The following function will calculate the score corresponding to the box type
+  //This function will be overriden in the derived class
+  virtual double calcScore(void) const { return 0.0f; }
+  void boxAbsorb(const uint32_t &weight);
 
  protected:
   double weight_;
-  std::vector<double> absorbed_weights;
+  std::vector<uint32_t> absorbed_weights;
 };
-
-// TODO
-
-void Box::boxAbsorb(double weight)
-{
-  absorbed_weights.push_back(weight);
-  weight_ += weight;
-}
 
 // Individual classes of green and blue box
 class GreenBox : public Box
@@ -77,10 +70,10 @@ class GreenBox : public Box
   public:
     explicit GreenBox(double initial_weight) : Box{initial_weight} {}
 
-    double calcScore() const
+    double calcScore(void) const override
     {
-      double mean_weight{0};
-      std::vector<double> recent_weights{};
+      double mean_weight{0.0f};
+      std::vector<uint32_t> recent_weights{};
       size_t abs_size {absorbed_weights.size()};
 
       if(abs_size < 3)
@@ -94,11 +87,13 @@ class GreenBox : public Box
         recent_weights.push_back(absorbed_weights.at(abs_size-1));
       }
 
-      for(auto w : recent_weights)
+      for(const auto &weight : recent_weights)
       {
-        mean_weight += w;
+        mean_weight += static_cast<double>(weight);
       }
       
+      mean_weight /= recent_weights.size();
+
       return (mean_weight * mean_weight);
     }
 };
@@ -108,21 +103,28 @@ class BlueBox : public Box
   public:
     explicit BlueBox(double initial_weight) : Box{initial_weight} {}
 
-    double calcScore() const
+    double calcScore(void) const override
     {
-      double min_Element = *std::min_element(absorbed_weights.begin(), absorbed_weights.end());
-      double max_Element = *std::max_element(absorbed_weights.begin(), absorbed_weights.end());
+      uint32_t min_Element = *std::min_element(absorbed_weights.begin(), absorbed_weights.end());
+      uint32_t max_Element = *std::max_element(absorbed_weights.begin(), absorbed_weights.end());
 
       return pairing(min_Element, max_Element);
     }
   
   private:
-    double pairing(double min, double max) const
+    double pairing(uint32_t &min, uint32_t &max) const
     {
-      double sum = min + max;
-      return (((sum * (sum + 1)) / 2) + max);
+      double sum = static_cast<double>(min + max);
+      return (((sum * (sum + 1.0f)) / 2.0f) + max);
     }
 };
+
+//The following function will absorb the input weight into the box and increment its total weight
+void Box::boxAbsorb(const uint32_t &weight)
+{
+  absorbed_weights.push_back(weight);
+  weight_ += static_cast<double>(weight);
+}
 
 std::unique_ptr<Box> Box::makeGreenBox(double initial_weight)
 {
@@ -140,13 +142,35 @@ std::unique_ptr<Box> Box::makeBlueBox(double initial_weight)
   return blue_box;
 }
 
+//The following function will return the index of smallest of the boxes
+uint16_t findSmallestBox(const std::vector<std::unique_ptr<Box> >& boxes)
+{
+  uint16_t small_idx {0u};
+
+  for(size_t idx{1}; idx < boxes.size(); idx++)
+  {
+    if(*boxes[idx] < *boxes[small_idx])
+    {
+      small_idx = static_cast<uint16_t>(idx);
+    } 
+  }
+
+  return small_idx;
+}
 
 class Player {
  public:
   void takeTurn(uint32_t input_weight,
                 const std::vector<std::unique_ptr<Box> >& boxes) {
-    // TODO
+
+    uint16_t small_idx {0u};
+
+    small_idx = findSmallestBox(boxes);
+
+    boxes[small_idx]->boxAbsorb(input_weight);
+    score_ += boxes[small_idx]->calcScore();
   }
+
   double getScore() const { return score_; }
 
  private:
@@ -160,10 +184,30 @@ std::pair<double, double> play(const std::vector<uint32_t>& input_weights) {
   boxes.emplace_back(Box::makeBlueBox(0.2));
   boxes.emplace_back(Box::makeBlueBox(0.3));
 
-  // TODO
+  //local variable
+  uint16_t count {0u};
+
   //Creating the player A and B instances
   Player player_A;
   Player player_B;
+
+  for(const auto &weight : input_weights)
+  {
+
+    if((count % 2u) == 0u)
+    {
+      player_A.takeTurn(weight, boxes);
+    }
+    else
+    {
+      player_B.takeTurn(weight, boxes);
+    }
+
+    if(count < 65535u)
+    {
+      count++;
+    } 
+  }
 
   std::cout << "Scores: player A " << player_A.getScore() << ", player B "
             << player_B.getScore() << std::endl;
