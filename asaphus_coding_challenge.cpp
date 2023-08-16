@@ -61,6 +61,21 @@ class Box {
 };
 
 // TODO
+std::unique_ptr<Box> Box::makeGreenBox(double initial_weight)
+{
+  //creating an unique pointer for the green box
+  std::unique_ptr<Box> green_box = std::make_unique<Box>(initial_weight);
+
+  return green_box;
+}
+
+std::unique_ptr<Box> Box::makeBlueBox(double initial_weight)
+{
+  //creating an unique pointer for the blue box
+  std::unique_ptr<Box> blue_box = std::make_unique<Box>(initial_weight);
+
+  return blue_box;
+}
 
 class Player {
  public:
@@ -82,6 +97,9 @@ std::pair<double, double> play(const std::vector<uint32_t>& input_weights) {
   boxes.emplace_back(Box::makeBlueBox(0.3));
 
   // TODO
+  //Creating the player A and B instances
+  Player player_A;
+  Player player_B;
 
   std::cout << "Scores: player A " << player_A.getScore() << ", player B "
             << player_B.getScore() << std::endl;
