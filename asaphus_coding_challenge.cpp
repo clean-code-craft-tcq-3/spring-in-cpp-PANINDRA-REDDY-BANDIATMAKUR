@@ -49,22 +49,85 @@
 
 class Box {
  public:
-  explicit Box(double initial_weight) : weight_(initial_weight) {}
+  explicit Box(double initial_weight) : weight_{initial_weight}, absorbed_weights{} {}
   static std::unique_ptr<Box> makeGreenBox(double initial_weight);
   static std::unique_ptr<Box> makeBlueBox(double initial_weight);
   bool operator<(const Box& rhs) const { return weight_ < rhs.weight_; }
   
   // TODO
+  void boxAbsorb(double weight);
+  double getWeight() const { return weight_; }
 
  protected:
   double weight_;
+  std::vector<double> absorbed_weights;
 };
 
 // TODO
+
+void Box::boxAbsorb(double weight)
+{
+  absorbed_weights.push_back(weight);
+  weight_ += weight;
+}
+
+// Individual classes of green and blue box
+class GreenBox : public Box
+{
+  public:
+    explicit GreenBox(double initial_weight) : Box{initial_weight} {}
+
+    double calcScore() const
+    {
+      double mean_weight{0};
+      std::vector<double> recent_weights{};
+      size_t abs_size {absorbed_weights.size()};
+
+      if(abs_size < 3)
+      {
+        recent_weights = absorbed_weights;
+      }
+      else
+      {
+        recent_weights.push_back(absorbed_weights.at(abs_size-3));
+        recent_weights.push_back(absorbed_weights.at(abs_size-2));
+        recent_weights.push_back(absorbed_weights.at(abs_size-1));
+      }
+
+      for(auto w : recent_weights)
+      {
+        mean_weight += w;
+      }
+      
+      return (mean_weight * mean_weight);
+    }
+};
+
+class BlueBox : public Box
+{
+  public:
+    explicit BlueBox(double initial_weight) : Box{initial_weight} {}
+
+    double calcScore() const
+    {
+      double min_Element = *std::min_element(absorbed_weights.begin(), absorbed_weights.end());
+      double max_Element = *std::max_element(absorbed_weights.begin(), absorbed_weights.end());
+
+      return pairing(min_Element, max_Element);
+    }
+  
+  private:
+    double pairing(double min, double max) const
+    {
+      double sum = min + max;
+      return (((sum * (sum + 1)) / 2) + max);
+    }
+};
+
 std::unique_ptr<Box> Box::makeGreenBox(double initial_weight)
 {
   //creating an unique pointer for the green box
-  std::unique_ptr<Box> green_box = std::make_unique<Box>(initial_weight);
+  std::unique_ptr<Box> green_box = std::make_unique<GreenBox>(initial_weight);
 
   return green_box;
 }
@@ -72,10 +135,11 @@ std::unique_ptr<Box> Box::makeGreenBox(double initial_weight)
 std::unique_ptr<Box> Box::makeBlueBox(double initial_weight)
 {
   //creating an unique pointer for the blue box
-  std::unique_ptr<Box> blue_box = std::make_unique<Box>(initial_weight);
+  std::unique_ptr<Box> blue_box = std::make_unique<BlueBox>(initial_weight);
 
   return blue_box;
 }
+
 
 class Player {
  public:
