@@ -229,9 +229,41 @@ TEST_CASE("Final scores for first 8 Fibonacci numbers", "[fibonacci8]") {
 }
 
 TEST_CASE("Test absorption of green box", "[green]") {
-  // TODO
+  std::vector<uint32_t> inputs{5, 16, 2, 34, 25};
+  std::unique_ptr<Box> green_box = Box::makeGreenBox(1.2);
+
+  green_box->boxAbsorb(inputs.at(0));
+  REQUIRE(green_box->calcScore() == 25);
+  
+  green_box->boxAbsorb(inputs.at(1));
+  REQUIRE(green_box->calcScore() == 110.25);
+
+  green_box->boxAbsorb(inputs.at(2));
+  REQUIRE(green_box->calcScore() == Approx(58.7777).epsilon(0.0001));
+
+  green_box->boxAbsorb(inputs.at(3));
+  REQUIRE(green_box->calcScore() == Approx(300.4444).epsilon(0.0001));
+
+  green_box->boxAbsorb(inputs.at(4));
+  REQUIRE(green_box->calcScore() == Approx(413.4444).epsilon(0.0001)); 
 }
 
 TEST_CASE("Test absorption of blue box", "[blue]") {
-  // TODO
+  std::vector<uint32_t> inputs{5, 16, 2, 34, 25};
+  std::unique_ptr<Box> blue_box = Box::makeBlueBox(20);
+
+  blue_box->boxAbsorb(inputs.at(0));
+  REQUIRE(blue_box->calcScore() == 60.0);
+  
+  blue_box->boxAbsorb(inputs.at(1));
+  REQUIRE(blue_box->calcScore() == 247.0);
+
+  blue_box->boxAbsorb(inputs.at(2));
+  REQUIRE(blue_box->calcScore() == 187.0);
+
+  blue_box->boxAbsorb(inputs.at(3));
+  REQUIRE(blue_box->calcScore() == 700.0);
+
+  blue_box->boxAbsorb(inputs.at(4));
+  REQUIRE(blue_box->calcScore() == 700.0);
 }
